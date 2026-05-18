@@ -90,7 +90,8 @@ def main():
     scheduler = BlockingScheduler(timezone="Asia/Seoul")
     scheduler.add_job(run_crawl, "cron", hour=11, minute=0)
     scheduler.add_job(run_crawl, "cron", hour=18, minute=0)
-    print("스케줄러 시작 — 실행 시각: 11:00, 18:00 (Asia/Seoul)")
+    scheduler.add_job(db.delete_old_notices, "cron", hour=0, minute=0)  # 매일 자정 정리
+    print("스케줄러 시작 — 실행 시각: 11:00, 18:00 / 자동 삭제: 00:00 (Asia/Seoul)")
     try:
         scheduler.start()
     except KeyboardInterrupt:

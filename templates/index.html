@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>전체 공지 현황</h1>
+<div class="preview-grid">
+  {% for cat, data in previews.items() %}
+  <div class="preview-card">
+    <div class="card-header">
+      <h2>{{ cat }}</h2>
+      <a href="{{ url_for('board', category=cat) }}" class="more-link">더보기 →</a>
+    </div>
+    <ul class="notice-list">
+      {% for n in data.notices %}
+      <li class="notice-item">
+        <a href="{{ n.url }}" target="_blank" rel="noopener">{{ n.title }}</a>
+        <span class="date">{{ n.date }}</span>
+      </li>
+      {% else %}
+      <li class="empty">공지 없음</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

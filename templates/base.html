@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notice Crawler</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <a href="{{ url_for('index') }}" class="logo">📋 Notice Crawler</a>
+    <nav>
+      {% for cat in categories %}
+        <a href="{{ url_for('board', category=cat) }}"
+           class="{{ 'active' if request.path == url_for('board', category=cat) else '' }}">
+          {{ cat }}
+        </a>
+      {% endfor %}
+      <a href="{{ url_for('bookmarks') }}"
+         class="{{ 'active' if request.path == url_for('bookmarks') else '' }}">
+        ★ 북마크
+      </a>
+    </nav>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <script>
+    function toggleBookmark(id, btn) {
+      fetch(`/bookmark/${id}`, { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+          btn.classList.toggle('active', data.bookmarked);
+          btn.title = data.bookmarked ? '북마크 해제' : '북마크';
+        });
+    }
+  </script>
+</body>
+</html>
