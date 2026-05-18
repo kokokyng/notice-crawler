@@ -18,9 +18,15 @@ def init_db():
                 date       TEXT,
                 board      TEXT    NOT NULL,
                 created_at TEXT    NOT NULL,
-                notified   INTEGER NOT NULL DEFAULT 0
+                notified   INTEGER NOT NULL DEFAULT 0,
+                bookmarked INTEGER NOT NULL DEFAULT 0
             )
         """)
+        # 기존 DB에 컬럼이 없을 경우 추가 (마이그레이션)
+        try:
+            conn.execute("ALTER TABLE notices ADD COLUMN bookmarked INTEGER NOT NULL DEFAULT 0")
+        except Exception:
+            pass
 
 
 def is_new(url: str) -> bool:
@@ -59,4 +65,47 @@ def mark_notified(ids: list[int]):
     with get_conn() as conn:
         conn.execute(
             f"UPDATE notices SET notified = 1 WHERE id IN ({placeholders})", ids
+        )
+
+
+def get_notices(board: str | None = None) -> list[dict]:
+    """대시보드용 공지 조회. board 미지정 시 전체 반환. 최신순 정렬."""
+    with get_conn() as conn:
+        conn.row_factory = sqlite3.Row
+        if board:
+            rows = conn.execute(
+                "SELECT * FROM notices WHERE board = ? ORDER BY date DESC, id DESC",
+                (board,),
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT * FROM notices ORDER BY date DESC, id DESC"
+            ).fetchall()
+        return [dict(row) for row in rows]
+
+
+def toggle_bookmark(notice_id: int) -> bool:
+    """북마크 토글. 변경 후 bookmarked 값 반환."""
+    with get_conn() as conn:
+        row = conn.execute(
+            "SELECT bookmarked FROM notices WHERE id = ?", (notice_id,)
+        ).fetchone()
+        if row is None:
+            return False
+        new_val = 0 if row[0] else 1
+        conn.execute(
+            "UPDATE notices SET bookmarked = ? WHERE id = ?", (new_val, notice_id)
+        )
+        return bool(new_val)
+
+
+def delete_old_notices():
+    """7일 지난 게시글 삭제 (북마크 제외)."""
+    with get_conn() as conn:
+        conn.execute(
+            """
+            DELETE FROM notices
+            WHERE bookmarked = 0
+              AND created_at < datetime('now', '-7 days')
+            """
         )

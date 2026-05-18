@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="board-header">
+  <h1>{{ category }}{% if sub %} — {{ sub }}{% endif %}</h1>
+  {% if subs %}
+  <div class="sub-tabs">
+    <a href="{{ url_for('board', category=category) }}"
+       class="{{ 'active' if not sub else '' }}">전체</a>
+    {% for s in subs %}
+    <a href="{{ url_for('board', category=category, sub=s) }}"
+       class="{{ 'active' if sub == s else '' }}">{{ s }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+<table class="notice-table">
+  <thead>
+    <tr>
+      <th class="col-no">번호</th>
+      <th class="col-title">제목</th>
+      <th class="col-board">게시판</th>
+      <th class="col-date">등록일</th>
+      <th class="col-bm">★</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for n in notices %}
+    <tr>
+      <td class="col-no">{{ loop.index }}</td>
+      <td class="col-title">
+        <a href="{{ n.url }}" target="_blank" rel="noopener">{{ n.title }}</a>
+      </td>
+      <td class="col-board">{{ n.board.split('-')[1] if '-' in n.board else n.board }}</td>
+      <td class="col-date">{{ n.date }}</td>
+      <td class="col-bm">
+        <button class="bm-btn {{ 'active' if n.bookmarked else '' }}"
+                title="{{ '북마크 해제' if n.bookmarked else '북마크' }}"
+                onclick="toggleBookmark({{ n.id }}, this)">★</button>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="empty">공지 없음</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
