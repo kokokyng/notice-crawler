@@ -7,7 +7,7 @@
     <a href="{{ url_for('board', category=category) }}"
        class="{{ 'active' if not sub else '' }}">전체</a>
     {% for s in subs %}
-    <a href="{{ url_for('board', category=category, sub=s) }}"
+    <a href="{{ url_for('board', category=category) }}?sub={{ s | urlencode }}"
        class="{{ 'active' if sub == s else '' }}">{{ s }}</a>
     {% endfor %}
   </div>

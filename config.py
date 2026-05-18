@@ -13,7 +13,7 @@ BOARDS = [
     ("서울여자대학교", "장학",      "http://www.swu.ac.kr/www/noticeb.html"),
     ("서울여자대학교", "행사",      "http://www.swu.ac.kr/www/noticec.html"),
     ("서울여자대학교", "채용/취업", "http://www.swu.ac.kr/www/noticed.html"),
-    ("서울여자대학교", "봉사",      "http://www.swu.ac.kr/www/noticee.html"),
+    ("서울여자대학교", "일반/봉사", "http://www.swu.ac.kr/www/noticee.html"),
 
     # 서울여자대학교 지능정보보호학부
     ("지능정보보호학부", "공지사항", "http://security.swu.ac.kr/sub.html?page=community_notice"),

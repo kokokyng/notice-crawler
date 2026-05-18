@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, jsonify
+from flask import Flask, render_template, redirect, url_for, jsonify, request
 import db
 
 app = Flask(__name__)
@@ -14,7 +14,7 @@ CATEGORIES = {
 
 # 세부 카테고리: 사이트명 → 게시판명 목록
 SUB_CATEGORIES = {
-    "서울여자대학교":  ["학사", "장학", "행사", "채용/취업", "봉사"],
+    "서울여자대학교":  ["학사", "장학", "행사", "채용/취업", "일반/봉사"],
     "지능정보보호학부": ["공지사항"],
     "KISA":          ["공지사항", "보도자료", "입찰공고", "채용정보"],
     "금융보안원":     ["공지사항", "보도자료"],
@@ -45,8 +45,8 @@ def index():
 
 
 @app.route("/board/<category>")
-@app.route("/board/<category>/<sub>")
-def board(category: str, sub: str | None = None):
+def board(category: str):
+    sub = request.args.get("sub")  # ?sub=채용/취업 처럼 쿼리스트링으로 받음
     site = CATEGORIES.get(category)
     notices = _filter_notices(site, sub)
     subs = SUB_CATEGORIES.get(site, []) if site else []
